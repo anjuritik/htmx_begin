@@ -10,13 +10,13 @@ const { getBooks } = require('./public/book');
 
 // Define a route to get the books
 app.get('/books', (req, res) => {
-    const books = getBooks();
-    let html = '<ul>';
-    books.forEach(book => {
-        html += `<li><strong>${book.title}</strong> by ${book.author} (${book.year})</li>`;
-    });
-    html += '</ul>';
-    res.send(html);
+    const bookshtml = getBooks();
+    // let html = '<ul>';
+    // books.forEach(book => {
+    //     html += `<li><strong>${book.title}</strong> by ${book.author} (${book.year})</li>`;
+    // });
+    //html += '</ul>';
+    res.send(bookshtml);
 });
 
 // Start the server
