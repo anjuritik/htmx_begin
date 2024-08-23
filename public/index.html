@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #book-list {
+            margin-top: 20px;
+        }
+        #book-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #book-list li {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        #book-list li:last-child {
+            border-bottom: none;
+        }
+        strong {
+            color: #007BFF;
+        }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.8.2" defer></script>
+</head>
+<body>
+    <h1>Book List</h1>
+    <button hx-get="/books" hx-target="#book-list" hx-swap="innerHTML">Get Books</button>
+    <div id="book-list">
+        <!-- Book details will be loaded here -->
+    </div>
+</body>
+</html>
