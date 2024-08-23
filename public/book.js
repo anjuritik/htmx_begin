@@ -1,58 +1,95 @@
 // books.js
 function getBooks() {
-    // Sample book data
+    // Hardcoded array of books
     const books = [
         { title: 'To Kill a Mockingbird', author: 'Harper Lee', year: 1960 },
         { title: '1984', author: 'George Orwell', year: 1949 },
         { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', year: 1925 },
-        // Add more books if needed
+        { title: 'Moby Dick', author: 'Herman Melville', year: 1851 },
+        { title: 'War and Peace', author: 'Leo Tolstoy', year: 1869 },
+        { title: 'Pride and Prejudice', author: 'Jane Austen', year: 1813 },
+        { title: 'The Catcher in the Rye', author: 'J.D. Salinger', year: 1951 },
+        { title: 'Brave New World', author: 'Aldous Huxley', year: 1932 },
+        { title: 'The Hobbit', author: 'J.R.R. Tolkien', year: 1937 }
     ];
 
     // Generate HTML for books
     let html = `
         <style>
-            .book-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-                padding: 20px;
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                font-family: Arial, sans-serif;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
             }
-            .book-item {
-                flex: 1;
-                min-width: 200px;
-                border: 1px solid #ddd;
+            th, td {
                 padding: 10px;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                border: 1px solid #ddd;
+                text-align: left;
             }
-            .book-item h3 {
-                margin: 0 0 10px;
-                color: #007BFF;
+            th {
+                background-color: #f0f0f0;
+                font-weight: bold;
             }
-            .book-item p {
-                margin: 0;
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
             }
-            h2 {
-                text-align: center;
-                color: #333;
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+            .container {
+                max-width: 800px;
+                margin: auto;
+                padding: 20px;
+                background: #f4f4f4;
+                border-radius: 8px;
+            }
+            button {
                 margin-bottom: 20px;
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #0056b3;
             }
         </style>
-        <h2>Book List</h2>
-        <div class="book-container">
+        <div class="container">
+            <button id="loadBooks">Load Books</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Year</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
-    
+
+    // Create the HTML for the books
     books.forEach(book => {
         html += `
-            <div class="book-item">
-                <h3>${book.title}</h3>
-                <p><strong>Author:</strong> ${book.author}</p>
-                <p><strong>Year:</strong> ${book.year}</p>
-            </div>
+            <tr>
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>${book.year}</td>
+            </tr>
         `;
     });
 
-    html += '</div>';
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
     return html;
 }
 
