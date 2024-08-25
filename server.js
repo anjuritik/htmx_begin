@@ -1,45 +1,52 @@
 const express = require('express');
-const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
+const mysql = require('mysql2');
 
 const app = express();
 const port = 3000;
 
-// Configure MySQL connection
-const connection = mysql.createConnection({
+// Create a MySQL connection pool
+const pool = mysql.createPool({
     host: 'localhost',
-    user: 'root',              // MySQL root username
-    password: '7611',         // MySQL root password
-    database: 'payroll'       // Use the 'payroll' database
+    user: 'root',
+    password: '7611', // Replace with your MySQL root password
+    database: 'payroll'
 });
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve static files from 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Login route
+// Route to display login form
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Route to handle login submission
 app.post('/login', (req, res) => {
-    const { userid, password } = req.body;
+    const { username, password } = req.body;
 
-    // Query to check login credentials
-    const query = 'SELECT * FROM access_details WHERE userid = ? AND password = ?';
-    
-    connection.execute(query, [userid, password], (err, results) => {
-        if (err) {
-            console.error(err);
-            res.send('<p>Error occurred. Please try again.</p>');
-            return;
-        }
+    // Print the received username and password to the console
+    console.log(`Received Username: ${username}`);
+    console.log(`Received Password: ${password}`);
 
-        if (results.length > 0) {
-            res.send('<p>Login successful!</p>');
-        } else {
-            res.send('<p>Invalid userid or password.</p>');
+    // Query to validate user credentials
+    pool.query(
+        'SELECT * FROM access_details WHERE userid = ? AND password = ?',
+        [username, password],
+        (error, results) => {
+            if (error) {
+                return res.send(`<h2>Error</h2><p>${error.message}</p>`);
+            }
+
+            if (results.length > 0) {
+                res.send('<h2>Login Successful</h2><p>Welcome!</p>');
+            } else {
+                res.send('<h2>Login Failed</h2><p>Invalid username or password.</p>');
+            }
         }
-    });
+    );
 });
 
 // Start server
