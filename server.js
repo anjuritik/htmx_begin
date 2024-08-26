@@ -81,7 +81,8 @@ app.post('/submit_complaint', (req, res) => {
     const { qtr_no, qtr_zone, complain_type, details } = req.body;
 
     // Retrieve user info from session
-   // const user = req.session.user;--
+    const user = req.session.user;
+    console.log(user);
 
     if (user && user.username) {
         // Insert complaint into the database
