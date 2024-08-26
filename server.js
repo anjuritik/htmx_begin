@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const mysql = require('mysql2');
+const session = require('express-session'); // Add this line
 
 const app = express();
 const port = 3000;
@@ -10,12 +11,13 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session setup
-// app.use(session({
-//     secret: 'your_secret_key',
-//     resave: false,
-//     saveUninitialized: true,
-// }));
+// Set up session middleware
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 
 // Create a MySQL connection pool
@@ -58,7 +60,7 @@ app.post('/login', (req, res) => {
 
                     // Send a plain text response
                    // res.send(`Login Successful, ${usr}!`);
-                   // req.session.user = usr;
+                    req.session.user = usr;
 
                     // Redirect to the complaint submission page
                     res.redirect('/cms_entry');
