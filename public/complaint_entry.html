@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Complaint</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h2>Submit Your Complaint</h2>
+    <form action="/submit_complaint" method="POST">
+        <label for="qtr_no">Quarter Number:</label>
+        <input type="text" id="qtr_no" name="qtr_no" required><br><br>
+
+        <label for="qtr_zone">Quarter Zone:</label>
+        <input type="text" id="qtr_zone" name="qtr_zone" required><br><br>
+
+        <label for="complain_type">Complaint Type:</label><br>
+        <input type="radio" id="type1" name="complain_type" value="Type1" required>
+        <label for="type1">Type1</label><br>
+        <input type="radio" id="type2" name="complain_type" value="Type2" required>
+        <label for="type2">Type2</label><br><br>
+
+        <label for="details">Details:</label><br>
+        <textarea id="details" name="details" rows="4" required></textarea><br><br>
+
+        <input type="submit" value="Submit Complaint">
+    </form>
+</body>
+</html>
