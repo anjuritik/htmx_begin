@@ -55,7 +55,7 @@
 </head>
 <body>
     <h2>Submit Your Complaint</h2>
-    <form action="/submit_complaint" method="POST">
+    <form action="/cms_entry" method="POST">
         <label for="qtr_no">Quarter Number:</label>
         <input type="text" id="qtr_no" name="qtr_no" required><br><br>
 
@@ -73,8 +73,8 @@
 
         <input type="submit" value="Submit Complaint">
     </form>
-    <h2>Complaint History</h2>
-    <table>
+    <h2>Your Complaint History</h2>
+    <table id="complaintTable">
         <thead>
             <tr>
                 <th>Quarter Number</th>
@@ -83,20 +83,41 @@
                 <th>Details</th>
                 <th>Date</th>
             </tr>
-            <!-- Rows will be populated by server-side rendering -->
-            <!-- Example row:
-            <tr>
-                <td>001</td>
-                <td>Zone A</td>
-                <td>Type1</td>
-                <td>Complaint details here.</td>
-                <td>2024-08-26</td>
-            </tr>
-            -->
         </thead>
         <tbody>
-            <!-- Dynamic content inserted here -->
+            <!-- Rows will be populated by JavaScript -->
         </tbody>
     </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/complaint-history')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.querySelector('#complaintTable tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(complaint => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${complaint.qtr_no}</td>
+                            <td>${complaint.qtr_zone}</td>
+                            <td>${complaint.complaint_type}</td>
+                            <td>${complaint.details}</td>
+                            <td>${complaint.date}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        });
+    </script>
 </body>
 </html>

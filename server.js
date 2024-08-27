@@ -32,6 +32,12 @@ const pool = mysql.createPool({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware to parse JSON and URL-encoded form data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({ secret: 'your_secret', resave: false, saveUninitialized: true }));
+
+
 // Route to display login form
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -77,18 +83,19 @@ app.get('/cms_entry', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'complaint_entry.html'));
 });
 // Route to display complaint entry form
-app.post('/submit_complaint', (req, res) => {
+//submit_complaint
+app.post('/cms_entry', (req, res) => {
     const { qtr_no, qtr_zone, complain_type, details } = req.body;
 
     // Retrieve user info from session
     const user = req.session.user;
     console.log(user);
 
-    if (user && user.username) {
+    if (user ) {
         // Insert complaint into the database
         pool.query(
-            'INSERT INTO cms_txn (userid, qtr_no, qtr_zone, complain_type, details) VALUES (?, ?, ?, ?, ?)',
-            [user.username, qtr_no, qtr_zone, complain_type, details],
+            'INSERT INTO cms_txn (userid, qtr_no, qtr_zone, complaint_type, details) VALUES (?, ?, ?, ?, ?)',
+            [user, qtr_no, qtr_zone, complain_type, details],
             (error, results) => {
                 if (error) {
                     console.error(`Database Error: ${error.message}`);
@@ -96,12 +103,61 @@ app.post('/submit_complaint', (req, res) => {
                 }
 
                 // Send a success response
-                res.send('Complaint submitted successfully.');
+               // res.send('Complaint submitted successfully.');
+                res.redirect('/cms_entry');
             }
         );
     } else {
         res.redirect('/login');
     }
+});
+//View complaint history
+// API endpoint to get complaint history for the logged-in user
+app.get('/api/complaint-history', (req, res) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Fetch complaint history for the logged-in user
+    pool.query(
+        'SELECT qtr_no, qtr_zone, complaint_type, details, DATE_FORMAT(created_at, "%Y-%m-%d") as date FROM cms_txn WHERE userid = ? ORDER BY created_at DESC',
+        [user],
+        (error, results) => {
+            if (error) {
+                console.error(`Database Error: ${error.message}`);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            res.json(results);
+        }
+    );
+});
+
+
+// Route to display all complaints history for the logged-in user
+app.get('/complaint-history', (req, res) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.redirect('/login');
+    }
+
+    // Fetch all complaints for the logged-in user
+    pool.query(
+        'SELECT qtr_no, qtr_zone, complaint_type, details, DATE_FORMAT(created_at, "%Y-%m-%d") as date FROM cms_txn WHERE userid = ? ORDER BY created_at DESC',
+        [user],
+        (error, results) => {
+            if (error) {
+                console.error(`Database Error: ${error.message}`);
+                return res.status(500).send('Internal server error.');
+            }
+
+            // Render the EJS template with the fetched data
+            res.render('complaint_history', { complaints: results });
+        }
+    );
 });
 // Start server
 app.listen(port, () => {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Your Complaint History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Quarter Number</th>
+                <th>Quarter Zone</th>
+                <th>Complaint Type</th>
+                <th>Details</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% complaints.forEach(function(complaint) { %>
+            <tr>
+                <td><%= complaint.qtr_no %></td>
+                <td><%= complaint.qtr_zone %></td>
+                <td><%= complaint.complain_type %></td>
+                <td><%= complaint.details %></td>
+                <td><%= complaint.date %></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
