@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .complaints-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .complaints-list li {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <div class="section">
+            <h2>Pending Complaints</h2>
+            <ul id="pending-complaints" class="complaints-list">
+                <!-- Pending complaints will be populated here -->
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Cleared Complaints</h2>
+            <ul id="cleared-complaints" class="complaints-list">
+                <!-- Cleared complaints will be populated here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function fetchComplaints() {
+            try {
+                const response = await fetch('/api/admin_disall');
+                const data = await response.json();
+
+                // Populate pending complaints
+                const pendingList = document.getElementById('pending-complaints');
+                pendingList.innerHTML = data.pendingComplaints.map(complaint =>
+                    `<li>${complaint.details}</li>`
+                    `<li>1234</li>`
+                ).join('');
+
+                // Populate cleared complaints
+                const clearedList = document.getElementById('cleared-complaints');
+                clearedList.innerHTML = data.clearedComplaints.map(complaint =>
+                    `<li>${complaint.details}</li>`
+                ).join('');
+
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+            }
+        }
+
+        // Fetch complaints when the page loads
+        window.onload = fetchComplaints;
+    </script>
+</body>
+</html>

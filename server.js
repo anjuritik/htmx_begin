@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const mysql = require('mysql2');
 const session = require('express-session'); // Add this line
+const { Console } = require('console');
 
 const app = express();
 const port = 3000;
@@ -58,7 +59,8 @@ app.post('/login', (req, res) => {
             if (results.length > 0) {
                 const usr = results[0].userid;
                 const pass = results[0].password;
-
+                const rl_= results[0].role_;
+                const isAdmin = results[0].role_ === 'admin'; // Assuming you have a role field
                 // Directly compare the provided password with the stored password
                 if (password === pass) {
                     // Print username to the console
@@ -67,9 +69,18 @@ app.post('/login', (req, res) => {
                     // Send a plain text response
                    // res.send(`Login Successful, ${usr}!`);
                     req.session.user = usr;
-
+                   // req.session.isAdmin = isAdmin; // Store admin status in session
                     // Redirect to the complaint submission page
-                    res.redirect('/cms_entry');
+                    
+                 if (isAdmin) {
+                  
+                    res.redirect('/cms_admin');
+                  }
+                  else
+                  {   res.redirect('/cms_entry');
+
+                  }
+
                 } else {
                     res.send('Login Failed: Invalid username or password.');
                 }
@@ -151,8 +162,40 @@ app.delete('/api/delete-complaint/:id', (req, res) => {
         }
     });
 });
+app.get('/api/admin_disall', (req, res) => {
+    // Check if user is admin
+    if (!req.session.isAdmin) {
+        return res.status(403).send('Access denied.');
+    }
 
-// Route to display all complaints history for the logged-in user
+    // Query to fetch pending complaints
+    pool.query('SELECT * FROM cms_txn WHERE status is null', (error, pendingResults) => {
+        if (error) {
+            console.error(`Database Error: ${error.message}`);
+            return res.status(500).send('Internal server error.');
+        }
+
+        // Query to fetch cleared complaints
+        pool.query('SELECT * FROM cms_txn WHERE status = "cleared"', (error, clearedResults) => {
+            if (error) {
+                console.error(`Database Error: ${error.message}`);
+                return res.status(500).send('Internal server error.');
+            }
+
+            // Respond with combined results
+            res.json({
+                pendingComplaints: pendingResults,
+                clearedComplaints: clearedResults
+            });
+        });
+    });
+});
+//Route to display all complaints history for the logged-in user
+app.get('/cms_admin', (req, res) => {
+    console.log(`Inside admin page`);
+    res.sendFile(path.join(__dirname, 'public', 'cms_admin.html'));
+});
+// Route to display all complaints history for the logged-in users
 app.get('/complaint-history', (req, res) => {
     const user = req.session.user;
 
