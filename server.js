@@ -134,7 +134,23 @@ app.get('/api/complaint-history', (req, res) => {
         }
     );
 });
+// Delete complaint route
+app.delete('/api/delete-complaint/:id', (req, res) => {
+    const complaintId = req.params.id;
 
+    pool.query('DELETE FROM cms_txn WHERE id = ?', [complaintId], (error, results) => {
+        if (error) {
+            console.error('Error deleting complaint:', error);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+
+        if (results.affectedRows > 0) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: 'Complaint not found' });
+        }
+    });
+});
 
 // Route to display all complaints history for the logged-in user
 app.get('/complaint-history', (req, res) => {
