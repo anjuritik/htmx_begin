@@ -3,80 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Complaint</title>
-    <title>Complaint Entry</title>
+    <title>Complaint Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-        }
-        h1, h2 {
+            background-color: #f4f4f4;
             color: #333;
         }
-        form {
+        h1, h2 {
+            color: #444;
+        }
+        h2 {
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
             margin-bottom: 20px;
+            text-align: center;
         }
-        label {
-            display: block;
-            margin: 8px 0 4px;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
         table, th, td {
             border: 1px solid #ddd;
         }
-        th, td {
+        td {
+            padding: 10px;
+            vertical-align: top;
+        }
+        .label-cell {
+            width: 25%; /* Adjust as needed for smaller labels */
+            text-align: right;
+            padding-right: 10px;
+        }
+        .input-cell {
+            width: 75%; /* Adjust as needed for larger input fields */
+        }
+        input[type="text"], textarea {
+            width: 100%;
             padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        .radio-group {
+            margin-top: 8px;
+        }
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        table.history {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table.history, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
+            color: #555;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f44336;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #c62828;
         }
     </style>
 </head>
 <body>
     <h2>Submit Your Complaint</h2>
     <form action="/cms_entry" method="POST">
-        <label for="qtr_no">Quarter Number:</label>
-        <input type="text" id="qtr_no" name="qtr_no" required><br><br>
-
-        <label for="qtr_zone">Quarter Zone:</label>
-        <input type="text" id="qtr_zone" name="qtr_zone" required><br><br>
-
-        <label for="complain_type">Complaint Type:</label><br>
-        <input type="radio" id="type1" name="complain_type" value="Type1" required>
-        <label for="type1">Type1</label><br>
-        <input type="radio" id="type2" name="complain_type" value="Type2" required>
-        <label for="type2">Type2</label><br><br>
-
-        <label for="details">Details:</label><br>
-        <textarea id="details" name="details" rows="4" required></textarea><br><br>
+        <table>
+            <tr>
+                <td class="label-cell"><label for="qtr_no">Quarter Number:</label></td>
+                <td class="input-cell"><input type="text" id="qtr_no" name="qtr_no" required></td>
+            </tr>
+            <tr>
+                <td class="label-cell"><label for="qtr_zone">Quarter Zone:</label></td>
+                <td class="input-cell"><input type="text" id="qtr_zone" name="qtr_zone" required></td>
+            </tr>
+            <tr>
+                <td class="label-cell"><label>Complaint Type:</label></td>
+                <td class="input-cell">
+                    <div class="radio-group">
+                        <input type="radio" id="type1" name="complain_type" value="Type1" required>
+                        <label for="type1">Type1</label>
+                        <input type="radio" id="type2" name="complain_type" value="Type2" required>
+                        <label for="type2">Type2</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="label-cell"><label for="details">Details:</label></td>
+                <td class="input-cell"><textarea id="details" name="details" rows="4" required></textarea></td>
+            </tr>
+        </table>
 
         <input type="submit" value="Submit Complaint">
     </form>
-    <h2>Your Complaint History</h2>
+   <h2>Your Complaint History</h2>
     <table id="complaintTable">
         <thead>
             <tr>
+                <th>Delete</th>
                 <th>ID</th>
                 <th>Quarter Number</th>
                 <th>Quarter Zone</th>
