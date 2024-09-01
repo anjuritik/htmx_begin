@@ -122,7 +122,7 @@ app.get('/api/complaint-history', (req, res) => {
 
     // Fetch complaint history for the logged-in user
     pool.query(
-        'SELECT qtr_no, qtr_zone, complaint_type, details, DATE_FORMAT(created_at, "%Y-%m-%d") as date FROM cms_txn WHERE userid = ? ORDER BY created_at DESC',
+        'SELECT id as comp_id,qtr_no, qtr_zone, complaint_type, details,DATE_FORMAT(entry_date, "%d-%m-%Y") as date FROM cms_txn WHERE userid = ? ORDER BY ENTRY_DATE DESC',
         [user],
         (error, results) => {
             if (error) {
@@ -146,7 +146,7 @@ app.get('/complaint-history', (req, res) => {
 
     // Fetch all complaints for the logged-in user
     pool.query(
-        'SELECT qtr_no, qtr_zone, complaint_type, details, DATE_FORMAT(created_at, "%Y-%m-%d") as date FROM cms_txn WHERE userid = ? ORDER BY created_at DESC',
+        'SELECT id as comp_id,qtr_no, qtr_zone, complaint_type, details, to_char(entry_date, "DD-MM-YYYY") as date FROM cms_txn WHERE userid = ? ORDER BY entry_date DESC',
         [user],
         (error, results) => {
             if (error) {

@@ -77,6 +77,7 @@
     <table id="complaintTable">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Quarter Number</th>
                 <th>Quarter Zone</th>
                 <th>Complaint Type</th>
@@ -105,6 +106,7 @@
                     data.forEach(complaint => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
+                            <td>${complaint.comp_id}</td>
                             <td>${complaint.qtr_no}</td>
                             <td>${complaint.qtr_zone}</td>
                             <td>${complaint.complaint_type}</td>
