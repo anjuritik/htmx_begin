@@ -113,7 +113,7 @@
 </head>
 <body>
     <h2>Submit Your Complaint</h2>
-    <form action="/cms_entry" method="POST">
+    <form action="/cms_admin_entry" method="POST" id="form">
         <table>
             <tr>
                 <td class="label-cell"><label for="qtr_no">Quarter Number:</label></td>
@@ -142,7 +142,7 @@
 
         <input type="submit" value="Submit Complaint">
     </form>
-   <h2>Your Complaint History</h2>
+   <h2>Admin Complaint History</h2>
     <table id="complaintTable">
         <thead>
             <tr>
@@ -162,7 +162,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/complaint-history')
+            fetch('/api/complaint-history-admin')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');

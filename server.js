@@ -162,6 +162,30 @@ app.delete('/api/delete-complaint/:id', (req, res) => {
         }
     });
 });
+// API endpoint to get complaint history for admin
+app.get('/api/complaint-history-admin', (req, res) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Fetch complaint history for all complaints without user filtering
+    pool.query(
+        'SELECT id as comp_id, qtr_no, qtr_zone, complaint_type, details, DATE_FORMAT(entry_date, "%d-%m-%Y") as date FROM cms_txn where status is null ORDER BY entry_date DESC',
+        (error, results) => {
+            if (error) {
+                console.error(`Database Error: ${error.message}`);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            res.json(results);
+        }
+    );
+});
+//////////////////////////////////////////
+
+
 app.get('/api/admin_disall', (req, res) => {
     // Check if user is admin
     if (!req.session.isAdmin) {
@@ -192,8 +216,7 @@ app.get('/api/admin_disall', (req, res) => {
 });
 //Route to display all complaints history for the logged-in user
 app.get('/cms_admin', (req, res) => {
-    console.log(`Inside admin page`);
-    res.sendFile(path.join(__dirname, 'public', 'cms_admin.html'));
+        res.sendFile(path.join(__dirname, 'public', 'cms_admin_new.html'));
 });
 // Route to display all complaints history for the logged-in users
 app.get('/complaint-history', (req, res) => {
