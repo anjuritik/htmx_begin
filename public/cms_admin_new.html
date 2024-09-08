@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Form</title>
     <style>
+        .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.btn {
+    margin: 5px;
+}
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -112,41 +136,54 @@
     </style>
 </head>
 <body>
-    <h2>Submit Your Complaint</h2>
-    <form action="/cms_admin_entry" method="POST" id="form">
-        <table>
-            <tr>
-                <td class="label-cell"><label for="qtr_no">Quarter Number:</label></td>
-                <td class="input-cell"><input type="text" id="qtr_no" name="qtr_no" required></td>
-            </tr>
-            <tr>
-                <td class="label-cell"><label for="qtr_zone">Quarter Zone:</label></td>
-                <td class="input-cell"><input type="text" id="qtr_zone" name="qtr_zone" required></td>
-            </tr>
-            <tr>
-                <td class="label-cell"><label>Complaint Type:</label></td>
-                <td class="input-cell">
-                    <div class="radio-group">
-                        <input type="radio" id="type1" name="complain_type" value="Type1" required>
-                        <label for="type1">Type1</label>
-                        <input type="radio" id="type2" name="complain_type" value="Type2" required>
-                        <label for="type2">Type2</label>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-cell"><label for="details">Details:</label></td>
-                <td class="input-cell"><textarea id="details" name="details" rows="4" required></textarea></td>
-            </tr>
-        </table>
+    <h2>Update Complaint</h2>
+    <form action="/.." method="POST" id="form">
+       <!-- Modal Structure -->
+<div id="complaintModal" class="modal">
+    <div class="modal-content">
+        <h4>Complaint Details</h4>
+        <form id="complaintForm">
+            <div class="input-field">
+                <input type="text" id="comp_id" disabled>
+                <label for="comp_id">Complaint ID</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="qtr_no" disabled>
+                <label for="qtr_no">Quarter Number</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="qtr_zone" disabled>
+                <label for="qtr_zone">Quarter Zone</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="details" disabled>
+                <label for="details">Details</label>
+            </div>
+            <div class="input-field">
+                <textarea id="remark_by_admin" class="materialize-textarea"></textarea>
+                <label for="remark_by_admin">Remarks by Admin</label>
+            </div>
+            <div class="input-field">
+                <select id="status_by_admin">
+                    <option value="" disabled selected>Choose Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="partial_pending">Partial Pending</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <label>Status by Admin</label>
+            </div>
+            <button type="button" id="updateButton" class="btn">Update</button>
+            <button type="button" id="closeModal" class="btn">Close</button>
+        </form>
+    </div>
+</div>
 
-        <input type="submit" value="Submit Complaint">
     </form>
    <h2>Admin Complaint History</h2>
     <table id="complaintTable">
         <thead>
             <tr>
-                <th>Delete</th>
+                <th>Edit</th>
                 <th>ID</th>
                 <th>Quarter Number</th>
                 <th>Quarter Zone</th>
@@ -161,37 +198,88 @@
     </table>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/complaint-history-admin')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tableBody = document.querySelector('#complaintTable tbody');
-                    tableBody.innerHTML = ''; // Clear existing rows
-        
-                    data.forEach(complaint => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><button onclick="deleteComplaint(${complaint.comp_id})">Delete</button></td>
-                            <td>${complaint.comp_id}</td>
-                            <td>${complaint.qtr_no}</td>
-                            <td>${complaint.qtr_zone}</td>
-                            <td>${complaint.complaint_type}</td>
-                            <td>${complaint.details}</td>
-                            <td>${complaint.date}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                });
+       document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/complaint-history-admin')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.querySelector('#complaintTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            data.forEach(complaint => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><button onclick="editComplaint(${complaint.comp_id})">Edit</button></td>
+                    <td>${complaint.comp_id}</td>
+                    <td>${complaint.qtr_no}</td>
+                    <td>${complaint.qtr_zone}</td>
+                    <td>${complaint.complaint_type}</td>
+                    <td>${complaint.details}</td>
+                    <td>${complaint.date}</td>
+                `;
+                tableBody.appendChild(row);
+            });
         });
+});
            
+        function editComplaint(comp_id) {
+    // Fetch complaint details using the ID
+    fetch(`/api/complaint/${comp_id}`)
+        .then(response => response.json())
+        .then(complaint => {
+            // Populate modal fields
+            document.getElementById('comp_id').value = complaint.id;
+            document.getElementById('qtr_no').value = complaint.qtr_no;
+            document.getElementById('qtr_zone').value = complaint.qtr_zone;
+            document.getElementById('details').value = complaint.details;
+            document.getElementById('remark_by_admin').value = complaint.remark_by_admin || '';
+            document.getElementById('status_by_admin').value = complaint.status_by_admin || '';
+  console.log(complaint.comp_id);
+            // Show the modal
+            document.getElementById('complaintModal').style.display = 'block';
+        });
+}
+
+document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('complaintModal').style.display = 'none';
+});
+
+document.getElementById('updateButton').addEventListener('click', function() {
+    const comp_id = document.getElementById('comp_id').value;
+    const remark_by_admin = document.getElementById('remark_by_admin').value;
+    const status_by_admin = document.getElementById('status_by_admin').value;
+
+    // Update the complaint details
+    fetch(`/api/complaint/${comp_id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            remark_by_admin,
+            status_by_admin
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(() => {
+        // Hide the modal and refresh the complaint list
+        document.getElementById('complaintModal').style.display = 'none';
+        location.reload(); // Reload to refresh the complaint list
+    })
+    .catch(error => console.error('Error updating complaint:', error));
+});
+
+
+
         </script>
 </body>
 </html>

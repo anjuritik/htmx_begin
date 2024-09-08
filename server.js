@@ -241,6 +241,40 @@ app.get('/complaint-history', (req, res) => {
         }
     );
 });
+// Fetch complaint details by ID
+app.get('/api/complaint/:id', (req, res) => {
+    const comp_id = req.params.id;
+
+    // SQL query to get complaint details
+    const sql = 'SELECT * FROM cms_txn WHERE id = ?';
+    pool.query(sql, [comp_id], (err, results) => {
+        if (err) {
+            console.error('Error fetching complaint details:', err);
+            return res.status(500).json({ error: 'Database query failed' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Complaint not found' });
+        }
+        res.json(results[0]); // Send the first result as JSON response
+    });
+});
+
+// Update endpoint to update complaint details
+app.put('/api/complaint/:id', (req, res) => {
+    const comp_id = req.params.id;
+    const { remark_by_admin, status_by_admin } = req.body;
+
+    const sql = `UPDATE cms_txn SET remark_by_admin = ?, status_by_admin = ? WHERE id = ?`;
+    const values = [remark_by_admin, status_by_admin, comp_id];
+
+    pool.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Error updating complaint:', err);
+            return res.status(500).json({ error: 'Database update failed' });
+        }
+        res.status(200).json({ message: 'Complaint updated successfully' });
+    });
+});
 // Start server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
